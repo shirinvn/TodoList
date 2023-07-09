@@ -14,32 +14,41 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
-public class TaskDialog  extends DialogFragment {
-    private AddNewTaskCallback callback;
+public class EditTaskDialog extends DialogFragment {
+    private EditTaskCallback callback;
+    private  String title;
+    private Task task;
+
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        callback= (AddNewTaskCallback) context;
+        callback= (EditTaskCallback) context;
+        task= getArguments().getParcelable("task");
+        if (task == null){
+            dismiss();
+        }
+
+
+
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         AlertDialog.Builder builder= new AlertDialog.Builder(getContext());
-        View view= LayoutInflater.from(getContext()).inflate(R.layout.dialog_task_add,null,false);
+        View view= LayoutInflater.from(getContext()).inflate(R.layout.dialog_task_edit,null,false);
 
-        TextInputEditText titleET= view.findViewById(R.id.et_dialog_title);
-        TextInputLayout inputlayout= view.findViewById(R.id.etl_dialog_title);
-        View saveBtn= view.findViewById(R.id.btn_dialog_save);
+      final   TextInputEditText titleET= view.findViewById(R.id.et_dialogedit_title);
+    titleET.setText(task.getTitle());
+       final TextInputLayout inputlayout= view.findViewById(R.id.etl_dialogedit_title);
+        View saveBtn= view.findViewById(R.id.btn_dialogedit_save);
         saveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (titleET.length() > 0){
-                    Task task = new Task();
                     task.setTitle(titleET.getText().toString());
-                    task.setCompleted(false);
-                    callback.onNewTask(task);
+                    callback.onEditTask(task);
                     dismiss();
 
                 }else {
@@ -52,7 +61,7 @@ public class TaskDialog  extends DialogFragment {
     }
 
 
-    public interface AddNewTaskCallback{
-        void onNewTask(Task task);
+    public interface EditTaskCallback{
+        void onEditTask(Task task);
     }
 }

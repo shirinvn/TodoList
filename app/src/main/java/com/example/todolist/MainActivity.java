@@ -10,7 +10,8 @@ import android.view.View;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity  implements TaskDialog.AddNewTaskCallback, TaskAdapter.TaskItemListener {
+public class MainActivity extends AppCompatActivity  implements AddTaskDialog.AddNewTaskCallback, TaskAdapter.TaskItemListener,
+        EditTaskDialog.EditTaskCallback {
     private SQLiteHelper sqLiteHelper;
     private TaskAdapter taskAdapter = new TaskAdapter(this);
 
@@ -30,11 +31,21 @@ public class MainActivity extends AppCompatActivity  implements TaskDialog.AddNe
         List<Task> tasks= sqLiteHelper.getTaska();
         taskAdapter.addItems( tasks);
 
+        View clearTasksBtn= findViewById(R.id.iv_main_clearTasks);
+        clearTasksBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sqLiteHelper.clearAllTasks();
+                taskAdapter.clearItems();
+            }
+        });
+
+
         View addnewTaskFab= findViewById(R.id.fab_main_addNewTask );
         addnewTaskFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TaskDialog dialog= new TaskDialog();
+                AddTaskDialog dialog= new AddTaskDialog();
                 dialog.show(getSupportFragmentManager(), null);
             }
         });
@@ -59,5 +70,23 @@ public class MainActivity extends AppCompatActivity  implements TaskDialog.AddNe
           taskAdapter.deleteItem(task);
       }
 
+    }
+
+    @Override
+    public void onItemLongPress(Task task) {
+        EditTaskDialog editTaskDialog= new EditTaskDialog();
+        Bundle bundle= new Bundle();
+        bundle.putParcelable("task", task);
+        editTaskDialog.setArguments(bundle);
+        editTaskDialog.show(getSupportFragmentManager(),null);
+    }
+
+    @Override
+    public void onEditTask(Task task) {
+
+     int result = sqLiteHelper.updateTask(task);
+     if (result > 0){
+         taskAdapter.updateItem(task);
+     }
     }
 }

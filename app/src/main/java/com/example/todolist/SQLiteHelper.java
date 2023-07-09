@@ -109,7 +109,14 @@ public int deleteTask(Task task){
   sqLiteDatabase.close();
   return result;
 }
-public void deleteTasks(){
+public void clearAllTasks(){
+        try {
+            SQLiteDatabase sqLiteDatabase= getWritableDatabase();
+            sqLiteDatabase.execSQL("DELETE FROM "+ TABLE_TASK);
+
+        }catch (SQLiteException e){
+            Log.i(TAG,"CLearAllTasks");
+        }
 
 }
 
