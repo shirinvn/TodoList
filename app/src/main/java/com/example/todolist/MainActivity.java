@@ -10,9 +10,10 @@ import android.view.View;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity  implements TaskDialog.AddNewTaskCallback{
+public class MainActivity extends AppCompatActivity  implements TaskDialog.AddNewTaskCallback, TaskAdapter.TaskItemListener {
     private SQLiteHelper sqLiteHelper;
-    private TaskAdapter taskAdapter = new TaskAdapter();
+    private TaskAdapter taskAdapter = new TaskAdapter(this);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,15 @@ public class MainActivity extends AppCompatActivity  implements TaskDialog.AddNe
         }else {
             Log.e("Main Activity", "item Not Inserted");
         }
+
+    }
+
+    @Override
+    public void onDeleteButtonClick(Task task) {
+      int result=  sqLiteHelper.deleteTask(task);
+      if (result>0){
+          taskAdapter.deleteItem(task);
+      }
 
     }
 }
