@@ -15,7 +15,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity  implements AddTaskDialog.AddNewTaskCallback, TaskAdapter.TaskItemListener,
         EditTaskDialog.EditTaskCallback {
-    private SQLiteHelper sqLiteHelper;
+    private TaskDao taskDao;
     private TaskAdapter taskAdapter = new TaskAdapter(this);
 
 
@@ -23,6 +23,8 @@ public class MainActivity extends AppCompatActivity  implements AddTaskDialog.Ad
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+       taskDao= AppDataBase.getAppDataBase(this).getTaskDao();
 
         EditText searchET= findViewById(R.id.et_main);
         searchET.addTextChangedListener(new TextWatcher() {
@@ -35,11 +37,11 @@ public class MainActivity extends AppCompatActivity  implements AddTaskDialog.Ad
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
                 if (s.length()>0){
-                  List<Task> tasks=  sqLiteHelper.searchInTasks(s.toString());
+                  List<Task> tasks=  taskDao.search(s.toString());
                   taskAdapter.setTask(tasks);
 
                 }else {
-                    List<Task> tasks = sqLiteHelper.getTaska();
+                    List<Task> tasks = taskDao.getTasks();
                     taskAdapter.setTask(tasks);
                 }
             }
@@ -54,15 +56,14 @@ public class MainActivity extends AppCompatActivity  implements AddTaskDialog.Ad
         recyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.VERTICAL,false));
         recyclerView.setAdapter(taskAdapter);
 
-        sqLiteHelper= new SQLiteHelper(this);
-        List<Task> tasks= sqLiteHelper.getTaska();
+        List<Task> tasks= taskDao.getTasks();
         taskAdapter.addItems( tasks);
 
         View clearTasksBtn= findViewById(R.id.iv_main_clearTasks);
         clearTasksBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sqLiteHelper.clearAllTasks();
+                taskDao.deleteAll();
                 taskAdapter.clearItems();
             }
         });
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity  implements AddTaskDialog.Ad
 
     @Override
     public void onNewTask(Task task) {
-        long taskId= sqLiteHelper.addTask(task);
+        long taskId= taskDao.addTask(task);
         if (taskId != -1){
             task.setId(taskId);
             taskAdapter.addItem(task);
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity  implements AddTaskDialog.Ad
 
     @Override
     public void onDeleteButtonClick(Task task) {
-      int result=  sqLiteHelper.deleteTask(task);
+      int result=  taskDao.deleteTask(task);
       if (result>0){
           taskAdapter.deleteItem(task);
       }
@@ -110,13 +111,13 @@ public class MainActivity extends AppCompatActivity  implements AddTaskDialog.Ad
 
     @Override
     public void onItemCheckedChange(Task task) {
-        sqLiteHelper.updateTask(task);
+        taskDao.updateTask(task);
     }
 
     @Override
     public void onEditTask(Task task) {
 
-     int result = sqLiteHelper.updateTask(task);
+     int result = taskDao.updateTask(task);
      if (result > 0){
          taskAdapter.updateItem(task);
      }

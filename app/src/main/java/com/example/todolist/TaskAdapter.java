@@ -96,7 +96,7 @@ public class TaskAdapter  extends RecyclerView.Adapter <TaskAdapter.TaskViewHold
 
 
 
-        public void bindTask(Task task){
+        public void bindTask(final Task task){
             checkBox.setOnCheckedChangeListener(null);
             checkBox.setChecked(task.isCompleted());
             checkBox.setText(task.getTitle());
