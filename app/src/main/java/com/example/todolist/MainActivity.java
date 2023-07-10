@@ -109,6 +109,11 @@ public class MainActivity extends AppCompatActivity  implements AddTaskDialog.Ad
     }
 
     @Override
+    public void onItemCheckedChange(Task task) {
+        sqLiteHelper.updateTask(task);
+    }
+
+    @Override
     public void onEditTask(Task task) {
 
      int result = sqLiteHelper.updateTask(task);
