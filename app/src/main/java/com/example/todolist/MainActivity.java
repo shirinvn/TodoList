@@ -5,8 +5,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 
 import java.util.List;
 
@@ -21,7 +24,31 @@ public class MainActivity extends AppCompatActivity  implements AddTaskDialog.Ad
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        EditText searchET= findViewById(R.id.et_main);
+        searchET.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                if (s.length()>0){
+                  List<Task> tasks=  sqLiteHelper.searchInTasks(s.toString());
+                  taskAdapter.setTask(tasks);
+
+                }else {
+                    List<Task> tasks = sqLiteHelper.getTaska();
+                    taskAdapter.setTask(tasks);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         RecyclerView recyclerView= findViewById(R.id.rv_main_tasks);
         recyclerView.setLayoutManager(new LinearLayoutManager(this,RecyclerView.VERTICAL,false));

@@ -76,6 +76,12 @@ public class TaskAdapter  extends RecyclerView.Adapter <TaskAdapter.TaskViewHold
         return tasks.size();
     }
 
+    public void setTask(List<Task> tasks){
+        this.tasks= tasks;
+        notifyDataSetChanged();
+    }
+
+
     public class TaskViewHolder extends RecyclerView.ViewHolder{
         private CheckBox checkBox;
         private View deleteBtn;
